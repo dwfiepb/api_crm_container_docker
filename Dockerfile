@@ -1,24 +1,19 @@
-# Use Node.js base image
 FROM node:latest
 
 # Set working directory
 WORKDIR /usr/src/app
 
-# Copy package files and install dependencies
-COPY package*.json ./
-RUN npm install
+# ARG for GitHub token
+ARG GITHUB_TOKEN
+ARG REPO_URL
 
-# Copy the rest of the code
-COPY . .
+# Clone the private repo
+RUN apt-get update && apt-get install -y git && \
+    git clone https://$GITHUB_TOKEN@$REPO_URL . && \
+    npm install && npm run build
 
-# Build the NestJS application
-RUN npm run build
-
-# Set environment variables file
-ENV NODE_ENV=production
-
-# Expose port
+# Expose NestJS port
 EXPOSE 3000
 
-# Start the application
+# Run the app
 CMD ["node", "dist/main"]

@@ -8,9 +8,13 @@ ARG GITHUB_TOKEN
 ARG REPO_URL
 
 # Clone the private repo
-RUN apt-get update && apt-get install -y git && \
+RUN apt-get update && \
+    apt-get install -y git openssl && \
+    apk add --no-cache openssl && \
     git clone https://$GITHUB_TOKEN@$REPO_URL . && \
-    npm install && npm run build
+    npm install && \
+    npx prisma generate && \
+    npm run build
 
 # Expose NestJS port
 EXPOSE 3000
